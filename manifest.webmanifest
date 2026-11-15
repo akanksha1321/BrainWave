@@ -1,0 +1,17 @@
+{
+  "name": "BrainWave",
+  "short_name": "BrainWave",
+  "description": "Seven short brain games: maths, sudoku, words, puzzles, pipes, dots and spot the difference.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F3FB",
+  "theme_color": "#B7A6FA",
+  "categories": ["games", "education"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
