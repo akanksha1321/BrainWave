@@ -1,5 +1,5 @@
 /* BrainWave service worker: caches the app shell so the games work offline. */
-const CACHE = 'brainwave-v2';
+const CACHE = 'brainwave-v3';
 const SHELL = [
   './',
   'index.html',

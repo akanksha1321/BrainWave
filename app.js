@@ -997,10 +997,11 @@ function complete(){
 function home(){
   const plays=store.get().plays||0;
   app.append(
+    h('a',{class:'back welcome-link',href:'#'},'← Welcome page'),
     h('div',{class:'hero herobox'},
       h('div',{class:'brand'},
         h('div',{html:'<svg viewBox="0 0 72 44" fill="none" stroke-width="6" stroke-linecap="round" aria-hidden="true"><path d="M4 26c8-18 14-18 20 0s12 18 20 0 10-12 24-6" stroke="var(--h-slide)"/><path d="M4 18c8-16 14-16 20 0s12 16 20 0 10-10 24-4" stroke="var(--h-pipe)" opacity=".9"/><path d="M4 34c8-16 14-16 20 0s12 16 20 0 10-10 24-4" stroke="var(--h-dots)" opacity=".9"/></svg>'}),
-        h('h1',{},'BrainWave')),
+        h('a',{href:'#','aria-label':'BrainWave welcome page',style:'color:inherit;text-decoration:none'},h('h1',{},'BrainWave'))),
       h('p',{},'Seven short brain games in one place. Play them one at a time or all in a single run.'+(plays?' You have played '+plays+(plays===1?' round.':' rounds.'):'')),
       store.get().streak>1?h('div',{class:'chip'},store.get().streak+' day streak'):null),
     h('div',{class:'panel run'},
