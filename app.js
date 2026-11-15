@@ -879,6 +879,53 @@ const games={
     best:()=>{const b=getBest('diff');return b!=null?'Best '+fmt(b):null}}
 };
 
+function waveField(canvas){
+  const ctx=canvas.getContext('2d');
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let w=0,ht=0,t=0,raf=0,tick=0,pal=[],g=null;
+  const cv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  function colors(){
+    pal=['--h-slide','--h-pipe','--h-dots','--h-word','--h-diff','--h-math'].map(cv);
+    g=ctx.createLinearGradient(0,0,0,ht);g.addColorStop(0,cv('--bg'));g.addColorStop(1,cv('--surface2'));
+  }
+  function size(){
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    w=canvas.clientWidth;ht=canvas.clientHeight;
+    canvas.width=Math.round(w*dpr);canvas.height=Math.round(ht*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);colors();
+  }
+  function draw(){
+    ctx.globalAlpha=1;ctx.fillStyle=g;ctx.fillRect(0,0,w,ht);
+    const N=30;
+    for(let i=0;i<N;i++){
+      const p=i/(N-1),y0=ht*(0.2+p*0.68),amp=14+p*46;
+      const curve=new Path2D();
+      for(let x=0;x<=w+8;x+=8){
+        const nx=x/w;
+        const y=y0+Math.sin(nx*4.2+t+i*.16)*amp*.55+Math.sin(nx*9-t*1.4+i*.09)*amp*.22+Math.sin(nx*1.7+t*.6-i*.05)*amp*.6;
+        if(x===0)curve.moveTo(x,y);else curve.lineTo(x,y);
+      }
+      const area=new Path2D(curve);area.lineTo(w+8,ht);area.lineTo(0,ht);area.closePath();
+      ctx.fillStyle=g;ctx.fill(area);
+      ctx.strokeStyle=pal[i%pal.length];ctx.globalAlpha=.5+.5*p;ctx.lineWidth=1.4+p*2.6;ctx.lineJoin='round';ctx.stroke(curve);
+    }
+    ctx.globalAlpha=1;
+  }
+  function loop(){t+=.014;if(++tick%90===0)colors();draw();raf=requestAnimationFrame(loop)}
+  size();draw();
+  if(!reduce)raf=requestAnimationFrame(loop);
+  listen(window,'resize',()=>{size();draw()});
+  later(()=>cancelAnimationFrame(raf));
+}
+function splash(){
+  const canvas=h('canvas',{class:'wavefield','aria-hidden':'true'});
+  app.append(h('section',{class:'splash'},canvas,
+    h('div',{class:'splash-in'},
+      h('h1',{class:'splash-title'},'BrainWave'),
+      h('p',{class:'splash-sub'},'Train your focus, memory and logic in short, playful rounds.'),
+      h('a',{class:'btn splash-btn',href:'#home'},'Start playing'))));
+  waveField(canvas);
+}
 function tabbar(active){
   const tabs=[['home','Games','<svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/></svg>'],
     ['progress','Progress','<svg viewBox="0 0 24 24"><path d="M5 20V11M12 20V5M19 20v-6"/></svg>'],
@@ -950,7 +997,7 @@ function complete(){
 function home(){
   const plays=store.get().plays||0;
   app.append(
-    h('div',{class:'hero'},
+    h('div',{class:'hero herobox'},
       h('div',{class:'brand'},
         h('div',{html:'<svg viewBox="0 0 72 44" fill="none" stroke-width="6" stroke-linecap="round" aria-hidden="true"><path d="M4 26c8-18 14-18 20 0s12 18 20 0 10-12 24-6" stroke="var(--h-slide)"/><path d="M4 18c8-16 14-16 20 0s12 16 20 0 10-10 24-4" stroke="var(--h-pipe)" opacity=".9"/><path d="M4 34c8-16 14-16 20 0s12 16 20 0 10-10 24-4" stroke="var(--h-dots)" opacity=".9"/></svg>'}),
         h('h1',{},'BrainWave')),
@@ -961,7 +1008,7 @@ function home(){
       h('button',{class:'btn',type:'button',onclick:startSession},'Start run')),
     h('div',{class:'cards'},Object.keys(games).map(id=>{
       const g=games[id],b=g.best();
-      return h('a',{class:'gcard',href:'#'+id},
+      return h('a',{class:'gcard',href:'#'+id,style:'--tint:var('+g.hue+')'},
         h('div',{class:'glyph',style:'background:var('+g.hue+')',html:ICON[id]}),
         h('h2',{},g.name),h('p',{},g.desc),
         h('div',{class:'best'+(b?' has':'')},b||'Not played yet'));
@@ -989,12 +1036,13 @@ function route(){
   const id=location.hash.slice(1);
   app.innerHTML='';window.scrollTo(0,0);
   if(session&&id!==ORDER[session.i]&&id!=='complete')session=null;
-  const tabs=id===''||id==='home'||id==='progress'||id==='options'||!(games[id]||id==='complete');
+  const tabs=id==='home'||id==='progress'||id==='options'||!(games[id]||id==='complete'||id==='');
   document.body.classList.toggle('has-tabs',tabs);
   if(id==='complete')complete();
   else if(id==='progress'){session=null;progress()}
   else if(id==='options'){session=null;options()}
   else if(games[id])games[id].mount(frame(id));
+  else if(id===''){session=null;splash()}
   else{session=null;home()}
 }
 addEventListener('hashchange',route);

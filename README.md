@@ -37,6 +37,7 @@ After deploying, open the site on your phone and choose **Add to Home Screen**.
 
 ## Features
 
+- Welcome page with an animated pastel wave background, then the games page
 - Seven games with saved personal bests
 - BrainWave Run: all seven games in one session with a final summary
 - Day streak, rounds played and bests on the Progress screen
