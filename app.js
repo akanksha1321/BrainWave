@@ -922,7 +922,7 @@ function splash(){
   app.append(h('section',{class:'splash'},canvas,
     h('div',{class:'splash-in'},
       h('h1',{class:'splash-title'},'BrainWave'),
-      h('p',{class:'splash-sub'},'Train your focus, memory and logic in short, playful rounds.'),
+      h('p',{class:'splash-sub'},'Train your focus, memory and logic in short, playful mini games.'),
       h('a',{class:'btn splash-btn',href:'#home'},'Start playing'))));
   waveField(canvas);
 }
